@@ -1,0 +1,11 @@
+# Set bridged network connection in packer
+# git commandline highlighting into profile
+# Create icon for eclipse and add to programming sub menu
+# Script to output versions of installed files to show installations are good
+
+********** Installations **********
+	# Install correct version of git
+	# Install or upgrade python
+	# Install Docker?
+	# Install visual studio developer and the plugins
+

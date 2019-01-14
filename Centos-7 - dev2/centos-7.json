@@ -1,0 +1,57 @@
+{
+  "variables": {
+    "iso": "C:\\Users\\paoc\\Downloads\\CentOS-7-x86_64-Everything-1709-01.iso",
+    "checksum": "4ac9ecab12af264e3746793981f84b4f5bb9198edc15273c310bed39c8eac471"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "iso_url": "{{ user `iso` }}",
+      "iso_checksum": "{{ user `checksum` }}",
+      "iso_checksum_type": "sha256",
+      "vm_name": "Spine Kingfisher",
+      "guest_os_type": "RedHat_64",
+      "ssh_username": "root",
+      "ssh_password": "changeme",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "2400s",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "16000"],
+		["modifyvm", "{{.Name}}", "--vram", "128"],
+        ["modifyvm", "{{.Name}}", "--cpus", "2"],
+        ["modifyvm", "{{.Name}}", "--audio", "none"]
+      ],
+      "disk_size": "10240",
+      "http_directory": "http",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ],
+      "shutdown_command": "/sbin/halt -p",
+      "post_shutdown_delay": "240s"
+    }
+  ],"provisioners": [
+		{
+			"type": "file",
+            "source": "file_provisioners/set_up_git.sh",
+            "destination": "/home/dev/set_up_git.sh"
+		},
+		{
+			"type": "shell",
+			"execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+			"environment_vars": [
+				"GIT_USER={{user `git_user`}}",
+				"GIT_EMAIL={{user `git_email`}}"
+			], 	
+			"scripts": [
+				"shell_provisioners/virtual-box.sh",
+				"shell_provisioners/node_config.sh",
+				"shell_provisioners/yarn_config.sh",
+				"shell_provisioners/eclipse_config.sh",
+				"shell_provisioners/chrome_config.sh",
+				"shell_provisioners/selenium_config.sh",
+				"shell_provisioners/git_config.sh",
+				"shell_provisioners/configure_vm.sh"
+			]     
+		}
+	]
+}
